@@ -1,3 +1,7 @@
+import AreaChart from './AreaChart'
+import StackedAreaChart from './StackedAreaChart'
+
+
 
 d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
     console.log(data)
@@ -12,3 +16,6 @@ d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
  
 
 })
+
+
+}
