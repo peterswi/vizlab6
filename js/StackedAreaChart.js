@@ -7,8 +7,8 @@ function StackedAreaChart(container) {
 let selected = null, xDomain, data;
 
   const margin = { top: 20, right: 30, bottom: 30, left: 50 };
-  const width = 400 - margin.left - margin.right;
-  const height = 250 - margin.top - margin.bottom;
+  const width = 500 - margin.left - margin.right;
+  const height = 300 - margin.top - margin.bottom;
 
   const svg = d3
     .select(container)
@@ -50,25 +50,26 @@ let selected = null, xDomain, data;
     svg.append('text')
         .attr('class','yaxisTitle')
         .attr("transform", "rotate(-90)")
-        .attr('x',-60)
-        .attr('y',20)
+        .attr('x',-50)
+        .attr('y',10)
         .style('text-anchor','middle')
         .text("# Unemployed")
+        .attr('font-size',10)
     
     svg.append('text')
         .attr('class','graphTitle')
-        .attr('x',350)
+        .attr('x',300)
         .attr('y',0)
         .text("US Unemployment 2000-2010")
         .style('text-anchor','middle')
         .style('font-weight','bolder')
-        .attr('font-size',20)
+        .attr('font-size',16)
 
   
   const tooltip=svg.append('text')
     .attr('x',0)
     .attr('y',0)
-    .attr('font-size',14)
+    .attr('font-size',12)
 
   
 

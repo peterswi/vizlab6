@@ -5,7 +5,7 @@ function AreaChart(container){
     const listeners = { brushed: null };
     // initialization
     const margin = { top: 20, right: 30, bottom: 30, left: 50 };
-    const width = 400 - margin.left - margin.right;
+    const width = 500 - margin.left - margin.right;
     const height = 100 - margin.top - margin.bottom;
   
     const svg = d3
@@ -28,7 +28,7 @@ function AreaChart(container){
     
     const yAxis = d3.axisLeft()
       .scale(yScale)
-      .ticks(5)
+      .ticks(3)
     
     const brush = d3.brushX()
         .extent([[0,0], [width,height]])
