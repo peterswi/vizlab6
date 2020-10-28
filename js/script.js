@@ -129,16 +129,17 @@ function StackedAreaChart(container) {
         .attr('class', 'path')
 
 	function update(data){
+    const keys=data.columns.slice(1)
 
     var stack = d3.stack()
-      .keys(data.columns.slice(1,15))
+      .keys(keys)
       .order(d3.stackOrderNone)
       .offset(d3.stackOffsetNone);
     
     var stackData=stack(data)
-    console.log(stackData)
+    
 
-    typeScale.domain(data.columns.slice(1,15))
+    typeScale.domain(keys)
     xScale.domain(d3.extent(data, d => d.date))
     yScale.domain([0, d3.max(stackData,
        a => d3.max(a, d=>d[1]))])
@@ -148,7 +149,7 @@ function StackedAreaChart(container) {
       .y1(d=>yScale(d[1]))
       .y0(d=>yScale(d[0]))
 
-    const areas = svg.selectAll(".area")
+    const areas = svg.selectAll("mylayers")
       .data(stackData, d => d.key);
     
     areas.enter() // or you could use join()
