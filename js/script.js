@@ -14,9 +14,11 @@ d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
     });
     console.log(data.columns.slice(1,15))
 
-    const chart=AreaChart('.areachart')
-    chart.update(data)
+    const chart1=AreaChart('.areachart')
+    chart1.update(data)
 
+    const chart2=StackedAreaChart('.stacked')
+    chart2.update(data)
 })
 
 
@@ -29,41 +31,36 @@ function AreaChart(container){
   const height = 400 - margin.top - margin.bottom;
 
   const svg = d3
-    .select(".areachart")
+    .select(container)
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const xScale=d3.scaleTime()
-      .range([0,width])
-      
+  const xScale=d3.scaleTime()
+    .range([0,width])
     
-    const yScale=d3.scaleLinear()
-      .range([height, 0]) 
+  
+  const yScale=d3.scaleLinear()
+    .range([height, 0]) 
 
-    const xAxis = d3.axisBottom()
-      .scale(xScale)
-    
-    const yAxis = d3.axisLeft()
-      .scale(yScale)
-    
-    svg.append("g")
-      .attr("class", "axis x-axis")
+  const xAxis = d3.axisBottom()
+    .scale(xScale)
+  
+  const yAxis = d3.axisLeft()
+    .scale(yScale)
+  
+  svg.append("g")
+    .attr("class", "axis x-axis")
 
-    svg.append("g")
-      .attr("class", "axis y-axis")
+  svg.append("g")
+    .attr("class", "axis y-axis")
 
-    svg.append("path")
-        .attr('class', 'path')
+  svg.append("path")
+      .attr('class', 'path')
 
-	  function update(data){ 
-      var stack = d3.stack()
-      .keys(data.columns.slice(1,15))
-      .order(d3.stackOrderNone)
-      .offset(d3.stackOffsetNone);
-    console.log(stack(data))
+  function update(data){ 
 
     // update scales, encodings, axes (use the total count)
       xScale.domain(d3.extent(data, d => d.date))
@@ -91,4 +88,60 @@ function AreaChart(container){
 	return {
 		update // ES6 shorthand for "update": update
 	};
+}
+
+function StackedAreaChart(container) {
+	// initialization
+  const margin = { top: 20, right: 30, bottom: 30, left: 50 };
+  const width = 600 - margin.left - margin.right;
+  const height = 400 - margin.top - margin.bottom;
+
+  const svg = d3
+    .select(container)
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  const xScale=d3.scaleTime()
+    .range([0,width])
+
+  const yScale = d3.scaleLinear()
+      .range([height,0])
+  
+  const typeScale = d3.scaleOrdinal()
+      .range(d3.schemeAccent);
+  const xAxis = d3.axisBottom()
+    .scale(xScale)
+  
+  const yAxis = d3.axisLeft()
+    .scale(yScale)
+  
+  svg.append("g")
+    .attr("class", "axis x-axis")
+
+  svg.append("g")
+    .attr("class", "axis y-axis")
+
+  svg.append("path")
+        .attr('class', 'path')
+
+	function update(data){
+
+    var stack = d3.stack()
+      .keys(data.columns.slice(1,15))
+      .order(d3.stackOrderNone)
+      .offset(d3.stackOffsetNone);
+    
+    var stackData=stack(data)
+    console.log(stackData)
+
+    typeScale.domain(data.columns.slice(1,15))
+    xScale.domain(d3.extent(data, d => d.date))
+    yScale.domain([0, d3.max(stackData, a => d3.max(a, d=>d[1])))])
+	}
+	return {
+		update
+	}
 }
