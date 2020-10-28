@@ -13,12 +13,12 @@ d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
       
     });
     
-
+    const uploadData=data
     const chart1=AreaChart('.areachart')
-    chart1.update(data)
+    chart1.update(uploadData)
 
     const chart2=StackedAreaChart('.stacked')
-    chart2.update(data)
+    chart2.update(uploadData)
 
     chart1.on("brushed", (range)=>{
       chart2.filterByDate(range); // coordinating with stackedAreaChart

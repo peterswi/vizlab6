@@ -1,7 +1,11 @@
 
 // input: selector for a chart container e.g., ".chart"
 function StackedAreaChart(container) {
-	// initialization
+
+    // initialization
+    
+let selected = null, xDomain, data;
+
   const margin = { top: 20, right: 30, bottom: 30, left: 50 };
   const width = 600 - margin.left - margin.right;
   const height = 400 - margin.top - margin.bottom;
@@ -35,31 +39,50 @@ function StackedAreaChart(container) {
   svg.append("g")
     .attr("class", "axis y-axis")
 
-const clip = svg.append("clipPath")
-    .attr("id", "area")
-    .append("rect")
-    .attr("width", width )
-    .attr("height", height )
-    .attr("x", 0)
-    .attr("y", 0);
+    svg.append("clipPath")
+        .attr("id", "area")
+        .append("rect")
+        .attr("width", width )
+        .attr("height", height )
+        .attr("x", 0)
+        .attr("y", 0);
+    
+    svg.append('text')
+        .attr('class','yaxisTitle')
+        .attr("transform", "rotate(-90)")
+        .attr('x',-60)
+        .attr('y',20)
+        .style('text-anchor','middle')
+        .text("# Unemployed")
+    
+    svg.append('text')
+        .attr('class','graphTitle')
+        .attr('x',300)
+        .attr('y',0)
+        .text("US Unemployment 2000-2010")
+        .style('text-anchor','middle')
+        .style('font-weight','bolder')
+        .attr('font-size',20)
+
   
   const tooltip=svg.append('text')
     .attr('x',0)
     .attr('y',0)
     .attr('font-size',16)
 
-    let xDomain, data;
+  
 
     function update(_data){
         data=_data
-        const keys=data.columns.slice(1)
+
+        const keys=selected? [selected] :data.columns.slice(1)
 
         var stack = d3.stack()
         .keys(keys)
         .order(d3.stackOrderNone)
         .offset(d3.stackOffsetNone);
         
-        var stackData=stack(data)
+        const stackData=stack(data)
         
 
         typeScale.domain(keys)
@@ -74,21 +97,32 @@ const clip = svg.append("clipPath")
             .y1(d=>yScale(d[1]))
         
         
-        const areas = svg.selectAll("stacks")
-        .data(stackData, d => d.key);
+        const areas = svg.selectAll(".area")
+            .data(stackData, d => d.key)
+           
         
         areas.enter() // or you could use join()
             .append("path")
+            .merge(areas)
+            .attr('class','area') 
+            .attr("d", area)
             .attr('clip-path','url(#area)')
             .style("fill", function(d) { return typeScale(d.key); })
-            .attr("class", function(d) { return "myArea " + d.key })
-            .on("mouseover", (event, d, i) => tooltip.text(d.key))
-            .on("mouseout", (event, d, i) => tooltip.text(''))
-            .merge(areas)
-            .attr("d", area)
+            .on("mouseover", (event, d) => tooltip.text(d.key))
+            .on("mouseout", (event) => tooltip.text(''))
+            .on("click", (event, d) => {
+                // toggle selected based on d.key
+                if (selected === d.key) {
+                    selected = null;
+                } else {
+                    selected = d.key;
+                }
+                update(data); // simply update the chart again
+            })
+           
         
-
-        areas.exit().remove();
+        areas.exit()
+            .remove()
         
         svg.select('.x-axis')
             .attr("transform", `translate(0, ${height})`)

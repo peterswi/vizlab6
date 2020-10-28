@@ -28,6 +28,7 @@ function AreaChart(container){
     
     const yAxis = d3.axisLeft()
       .scale(yScale)
+      .ticks(5)
     
     const brush = d3.brushX()
         .extent([[0,0], [width,height]])
@@ -40,10 +41,13 @@ function AreaChart(container){
     svg.append("g")
       .attr("class", "axis y-axis")
     
-    svg.append("g")
+    //const defaultSelection = [xScale(d3.utcYear.offset(xScale.domain()[1], -1)), xScale.range()[1]]
+
+    const startBrush=svg.append("g")
         .attr('class', 'brush')
         .call(brush);
-  
+    
+
     svg.append("path")
         .attr('class', 'path')
     
@@ -53,6 +57,13 @@ function AreaChart(container){
             listeners["brushed"](event.selection.map(xScale.invert));
          }
     }
+
+    function brushend(event) {
+        //this isnt quite right
+        if (!event.selection) {
+            //startBrush.call(brush.move, defaultSelection)
+         }
+    }
     
   
     function update(data){ 
@@ -60,7 +71,7 @@ function AreaChart(container){
       // update scales, encodings, axes (use the total count)
         xScale.domain(d3.extent(data, d => d.date))
   
-        yScale.domain(d3.extent(data, d => d.total))
+        yScale.domain([0, d3.max(data, d => d.total)])
   
         const area = d3.area()
               .x(d => xScale(d.date))
