@@ -126,7 +126,7 @@ function StackedAreaChart(container) {
     .attr("class", "axis y-axis")
 
   svg.append("path")
-        .attr('class', 'path')
+        .attr('class', 'stackpath')
 
 	function update(data){
     const keys=data.columns.slice(1)
@@ -144,19 +144,23 @@ function StackedAreaChart(container) {
     yScale.domain([0, d3.max(stackData,
        a => d3.max(a, d=>d[1]))])
 
+      
     const area = d3.area()
-      .x(d => xScale(d.date))
-      .y1(d=>yScale(d[1]))
-      .y0(d=>yScale(d[0]))
-
-    const areas = svg.selectAll("mylayers")
+        .x(d=>xScale(d.data.date))
+        .y0(d=>yScale(d[0]))
+        .y1(d=>yScale(d[1]))
+      
+      
+    const areas = svg.selectAll("stacks")
       .data(stackData, d => d.key);
     
     areas.enter() // or you could use join()
 	    .append("path")
       .style("fill", function(d) { return typeScale(d.key); })
+      .attr("class", function(d) { return "myArea " + d.key })
 	    .merge(areas)
       .attr("d", area)
+      
 
     areas.exit().remove();
     svg.select('.x-axis')
