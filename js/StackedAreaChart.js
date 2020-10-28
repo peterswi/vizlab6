@@ -35,8 +35,13 @@ function StackedAreaChart(container) {
   svg.append("g")
     .attr("class", "axis y-axis")
 
-  svg.append("path")
-        .attr('class', 'stackpath')
+const clip = svg.append("clipPath")
+    .attr("id", "area")
+    .append("rect")
+    .attr("width", width )
+    .attr("height", height )
+    .attr("x", 0)
+    .attr("y", 0);
   
   const tooltip=svg.append('text')
     .attr('x',0)
@@ -74,15 +79,17 @@ function StackedAreaChart(container) {
         
         areas.enter() // or you could use join()
             .append("path")
+            .attr('clip-path','url(#area)')
             .style("fill", function(d) { return typeScale(d.key); })
             .attr("class", function(d) { return "myArea " + d.key })
             .on("mouseover", (event, d, i) => tooltip.text(d.key))
             .on("mouseout", (event, d, i) => tooltip.text(''))
-                .merge(areas)
+            .merge(areas)
             .attr("d", area)
         
 
         areas.exit().remove();
+        
         svg.select('.x-axis')
             .attr("transform", `translate(0, ${height})`)
             .call(xAxis)
