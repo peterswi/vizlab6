@@ -5,8 +5,8 @@ function AreaChart(container){
     const listeners = { brushed: null };
     // initialization
     const margin = { top: 20, right: 30, bottom: 30, left: 50 };
-    const width = 600 - margin.left - margin.right;
-    const height = 200 - margin.top - margin.bottom;
+    const width = 400 - margin.left - margin.right;
+    const height = 100 - margin.top - margin.bottom;
   
     const svg = d3
       .select(container)

@@ -7,8 +7,8 @@ function StackedAreaChart(container) {
 let selected = null, xDomain, data;
 
   const margin = { top: 20, right: 30, bottom: 30, left: 50 };
-  const width = 600 - margin.left - margin.right;
-  const height = 400 - margin.top - margin.bottom;
+  const width = 400 - margin.left - margin.right;
+  const height = 250 - margin.top - margin.bottom;
 
   const svg = d3
     .select(container)
