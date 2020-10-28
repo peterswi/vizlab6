@@ -19,6 +19,10 @@ d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
 
     const chart2=StackedAreaChart('.stacked')
     chart2.update(data)
+
+    chart1.on("brushed", (range)=>{
+      chart2.filterByDate(range); // coordinating with stackedAreaChart
+    })
 })
 
 

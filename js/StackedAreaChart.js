@@ -43,52 +43,60 @@ function StackedAreaChart(container) {
     .attr('y',0)
     .attr('font-size',16)
 
-	function update(data){
-    const keys=data.columns.slice(1)
+    let xDomain, data;
 
-    var stack = d3.stack()
-      .keys(keys)
-      .order(d3.stackOrderNone)
-      .offset(d3.stackOffsetNone);
-    
-    var stackData=stack(data)
-    
+    function update(_data){
+        data=_data
+        const keys=data.columns.slice(1)
 
-    typeScale.domain(keys)
-    xScale.domain(d3.extent(data, d => d.date))
-    yScale.domain([0, d3.max(stackData,
-       a => d3.max(a, d=>d[1]))])
+        var stack = d3.stack()
+        .keys(keys)
+        .order(d3.stackOrderNone)
+        .offset(d3.stackOffsetNone);
+        
+        var stackData=stack(data)
+        
 
-      
-    const area = d3.area()
-        .x(d=>xScale(d.data.date))
-        .y0(d=>yScale(d[0]))
-        .y1(d=>yScale(d[1]))
-      
-      
-    const areas = svg.selectAll("stacks")
-      .data(stackData, d => d.key);
-    
-    areas.enter() // or you could use join()
-	    .append("path")
-      .style("fill", function(d) { return typeScale(d.key); })
-      .attr("class", function(d) { return "myArea " + d.key })
-      .on("mouseover", (event, d, i) => tooltip.text(d.key))
-      .on("mouseout", (event, d, i) => tooltip.text(''))
-	    .merge(areas)
-      .attr("d", area)
-      
+        typeScale.domain(keys)
+        xScale.domain(xDomain? xDomain: d3.extent(data, d => d.date))
+        yScale.domain([0, d3.max(stackData,
+        a => d3.max(a, d=>d[1]))])
 
-    areas.exit().remove();
-    svg.select('.x-axis')
-        .attr("transform", `translate(0, ${height})`)
-        .call(xAxis)
+        
+        const area = d3.area()
+            .x(d=>xScale(d.data.date))
+            .y0(d=>yScale(d[0]))
+            .y1(d=>yScale(d[1]))
+        
+        
+        const areas = svg.selectAll("stacks")
+        .data(stackData, d => d.key);
+        
+        areas.enter() // or you could use join()
+            .append("path")
+            .style("fill", function(d) { return typeScale(d.key); })
+            .attr("class", function(d) { return "myArea " + d.key })
+            .on("mouseover", (event, d, i) => tooltip.text(d.key))
+            .on("mouseout", (event, d, i) => tooltip.text(''))
+                .merge(areas)
+            .attr("d", area)
+        
 
-      svg.select('.y-axis')
-        .call(yAxis)
+        areas.exit().remove();
+        svg.select('.x-axis')
+            .attr("transform", `translate(0, ${height})`)
+            .call(xAxis)
+
+        svg.select('.y-axis')
+            .call(yAxis)
+    }
+    function filterByDate(range){
+		xDomain = range;  // -- (3)
+		update(data); // -- (4)
 	}
 	return {
-		update
+        update,
+        filterByDate
 	}
 }
 export default StackedAreaChart

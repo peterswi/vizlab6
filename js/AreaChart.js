@@ -1,7 +1,8 @@
 
 // input: selector for a chart container e.g., ".chart"
 function AreaChart(container){
- 
+
+    const listeners = { brushed: null };
     // initialization
     const margin = { top: 20, right: 30, bottom: 30, left: 50 };
     const width = 600 - margin.left - margin.right;
@@ -28,14 +29,31 @@ function AreaChart(container){
     const yAxis = d3.axisLeft()
       .scale(yScale)
     
+    const brush = d3.brushX()
+        .extent([[0,0], [width,height]])
+        .on('brush', brushed)
+        .on('end',brushed)
+    
     svg.append("g")
       .attr("class", "axis x-axis")
   
     svg.append("g")
       .attr("class", "axis y-axis")
+    
+    svg.append("g")
+        .attr('class', 'brush')
+        .call(brush);
   
     svg.append("path")
         .attr('class', 'path')
+    
+    function brushed(event) {
+        
+        if (event.selection) {
+            listeners["brushed"](event.selection.map(xScale.invert));
+         }
+    }
+    
   
     function update(data){ 
   
@@ -61,9 +79,12 @@ function AreaChart(container){
           .call(yAxis)
           
       }
-  
+    function on(event, listener) {
+		listeners[event] = listener;
+    }
       return {
-          update // ES6 shorthand for "update": update
+          update,
+          on
       };
   }
 
