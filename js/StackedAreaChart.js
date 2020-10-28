@@ -57,7 +57,7 @@ let selected = null, xDomain, data;
     
     svg.append('text')
         .attr('class','graphTitle')
-        .attr('x',300)
+        .attr('x',350)
         .attr('y',0)
         .text("US Unemployment 2000-2010")
         .style('text-anchor','middle')
@@ -68,7 +68,7 @@ let selected = null, xDomain, data;
   const tooltip=svg.append('text')
     .attr('x',0)
     .attr('y',0)
-    .attr('font-size',16)
+    .attr('font-size',14)
 
   
 
