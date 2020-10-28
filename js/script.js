@@ -67,7 +67,7 @@ function AreaChart(container){
 
       yScale.domain(d3.extent(data, d => d.total))
 
-      let area = d3.area()
+      const area = d3.area()
             .x(d => xScale(d.date))
             .y1(d => yScale(d.total))
             .y0(d => yScale.range()[0])
@@ -112,6 +112,7 @@ function StackedAreaChart(container) {
   
   const typeScale = d3.scaleOrdinal()
       .range(d3.schemeAccent);
+
   const xAxis = d3.axisBottom()
     .scale(xScale)
   
@@ -139,7 +140,30 @@ function StackedAreaChart(container) {
 
     typeScale.domain(data.columns.slice(1,15))
     xScale.domain(d3.extent(data, d => d.date))
-    yScale.domain([0, d3.max(stackData, a => d3.max(a, d=>d[1])))])
+    yScale.domain([0, d3.max(stackData,
+       a => d3.max(a, d=>d[1]))])
+
+    const area = d3.area()
+      .x(d => xScale(d.date))
+      .y1(d=>yScale(d[1]))
+      .y0(d=>yScale(d[0]))
+
+    const areas = svg.selectAll(".area")
+      .data(stackData, d => d.key);
+    
+    areas.enter() // or you could use join()
+	    .append("path")
+      .style("fill", function(d) { return typeScale(d.key); })
+	    .merge(areas)
+      .attr("d", area)
+
+    areas.exit().remove();
+    svg.select('.x-axis')
+        .attr("transform", `translate(0, ${height})`)
+        .call(xAxis)
+
+      svg.select('.y-axis')
+        .call(yAxis)
 	}
 	return {
 		update
