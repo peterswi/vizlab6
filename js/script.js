@@ -12,7 +12,8 @@ d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
       element['total']=total
       
     });
-    console.log(data)
+    console.log(data.columns.slice(1,15))
+
     const chart=AreaChart('.areachart')
     chart.update(data)
 
@@ -21,7 +22,7 @@ d3.csv('data/unemployment.csv',d3.autoType).then(data=>{
 
 // input: selector for a chart container e.g., ".chart"
 function AreaChart(container){
-
+ 
   // initialization
   const margin = { top: 20, right: 30, bottom: 30, left: 50 };
   const width = 600 - margin.left - margin.right;
@@ -50,17 +51,19 @@ function AreaChart(container){
     
     svg.append("g")
       .attr("class", "axis x-axis")
+
     svg.append("g")
       .attr("class", "axis y-axis")
-
-   
-        
-
 
     svg.append("path")
         .attr('class', 'path')
 
 	  function update(data){ 
+      var stack = d3.stack()
+      .keys(data.columns.slice(1,15))
+      .order(d3.stackOrderNone)
+      .offset(d3.stackOffsetNone);
+    console.log(stack(data))
 
     // update scales, encodings, axes (use the total count)
       xScale.domain(d3.extent(data, d => d.date))
